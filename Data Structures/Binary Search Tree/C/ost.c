@@ -195,6 +195,31 @@ Node *os_select(Node *x, int i)
     }
 }
 
+int os_rank(BST *this, Node *x)
+{
+    int r;
+    if (x == NULL)
+        return -1;
+    if (x->left != NULL)
+    {
+        r = x->left->rank + 1;
+    }
+    else
+        r = 1;
+    Node *y = x;
+
+    while (y != this->root)
+    {
+        if (y == y->parent->right)
+        {
+            if (y->parent->left != NULL)
+                r += y->parent->left->rank + 1;
+            else r++;
+        }
+        y = y->parent;
+    }
+    return r;
+}
 
 void inorder_tree_walk(Node *this)
 {
