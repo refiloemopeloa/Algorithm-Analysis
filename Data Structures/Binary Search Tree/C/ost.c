@@ -404,5 +404,18 @@ int main()
     // printTree(tree);
     // reset_visited(tree->root);
 
+    // for (int key = 1; key <= size; key++)
+    // {
+    //     printf("Getting node with rank %d:\n", key);
+    //     printf("Node with rank %d:\t%d\n", key, os_select(tree->root, key)->key);
+    // }
+    int min = min_Node(tree)->key;
+    int max = max_Node(tree)->key;
+    for (int key = min; key <= max; key++)
+    {
+        printf("Getting rank of node %d:\n", key);
+        printf("Rank of node %d:\t%d\n", key, os_rank(tree, get_Node(tree, key)));
+    }
+
     return 0;
 }
