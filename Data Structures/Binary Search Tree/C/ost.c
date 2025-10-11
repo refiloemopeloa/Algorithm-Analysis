@@ -169,6 +169,32 @@ void tree_delete(BST *this, Node *z)
     free(z);
 }
 
+Node *os_select(Node *x, int i)
+{
+    Node *this = x;
+    int r;
+    while (1)
+    {
+        if (this->left != NULL)
+        {
+            r = this->left->rank + 1;
+        }
+        else
+            r = 1;
+        if (i == r)
+            return this;
+        else if (i < r)
+        {
+            this = this->left;
+        }
+        else
+        {
+            this = this->right;
+            i -= r;
+        }
+    }
+}
+
 
 void inorder_tree_walk(Node *this)
 {
