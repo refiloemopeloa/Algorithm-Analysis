@@ -1,22 +1,20 @@
 #include "stdio.h"
 #include "stdlib.h"
+#include "bst.h"
 
-typedef struct Node
-{
-    struct Node *left;
-    struct Node *right;
-    struct Node *parent;
-    int key;
-    char visited;
-} Node;
-
-#define nullptr ((void *)0);
-
-typedef struct
-{
-    Node *root;
-} BST;
-
+/**
+* @brief Node constructor
+* 
+* This function acts as a Node constructor. It initializes all the members of the Node struct to the given parameters.
+*
+* @param this The node to be initialized. Note that the node must already be declared and if it is to be dynamically allocated, the allocation must be done before passing to this function.
+* @param left The left node of this.
+* @param right The right node of this.
+* @param parent The parent node of this.
+* @param key The key associated with this.
+*
+* @returns Nothing
+*/
 void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
 {
     this->left = left;
@@ -26,10 +24,14 @@ void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
     this->visited = 0;
 }
 
-void new_BST(BST *this, int *array, int *size)
-{
-    ;
-}
+/**
+ * @brief Copy constructor
+ * This function acts as a Copy constructor. It initializes all the members of the Node struct to the members of the given Node.
+* @param this The node to be initialized. Note that the node must already be declared and if it is to be dynamically allocated, the allocation must be done before passing to this function.
+ * @param other The node whose members will be copied from.
+ * 
+ * @returns Nothing
+ */
 void copy_Node(Node *this, Node *other)
 {
     this->left = other->left;
@@ -38,39 +40,16 @@ void copy_Node(Node *this, Node *other)
     this->key = other->key;
 }
 
-Node *get_Node(BST *this, int key)
-{
-    Node *ptr = this->root;
-
-    while (1)
-    {
-        if (ptr == NULL)
-            return NULL;
-        if (ptr->key == key)
-            return ptr;
-        if (ptr->key > key)
-        {
-            ptr = ptr->left;
-            continue;
-        }
-        ptr = ptr->right;
-    }
-}
-
-Node *min_Node(Node *this)
-{
-    Node *ptr = this;
-
-    if (ptr == NULL)
-        return NULL;
-    while (ptr->left != NULL)
-    {
-        ptr = ptr->left;
-    }
-
-    return ptr;
-}
-
+/**
+ * @brief Insert a new node into the binary search tree
+ * 
+ * Inserts a new node into the BST while maintaining the binary search tree property.
+ * If the tree is empty, the new node becomes the root. Otherwise, traverses the tree
+ * to find the correct position based on key comparison and inserts as a leaf node.
+ * 
+ * @param this The binary search tree to insert into
+ * @param new The node to be inserted into the tree
+ */
 void tree_insert(BST *this, Node *new)
 {
     Node *ptr = this->root;
@@ -105,19 +84,16 @@ void tree_insert(BST *this, Node *new)
     }
 }
 
-void transplant(BST* this, Node* u, Node* v) {
-    if (u->parent == NULL) {
-        this->root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    if (v != NULL) {
-        v->parent = u->parent;
-    }
-}
-
+/**
+ * @brief Delete a node from the binary search tree
+ * 
+ * Removes the specified node from the BST while maintaining the binary search tree property.
+ * Handles three cases: node with no left child, node with no right child, and node with both children.
+ * When node has two children, it finds the successor (minimum in right subtree) and replaces the node.
+ * 
+ * @param this The binary search tree to delete from
+ * @param z The node to be deleted from the tree
+ */
 void tree_delete(BST *this, Node* z)
 {
     if (z->left == NULL) {
@@ -137,112 +113,7 @@ void tree_delete(BST *this, Node* z)
     }
 }
 
-void inorder_tree_walk(Node *this)
-{
-    Node *ptr = this;
-    while (1)
-    {
-        if (ptr == NULL)
-        {
-            printf("\n");
-            return;
-        }
-        if (ptr->visited == 1)
-        {
-            ptr = ptr->parent;
-            continue;
-        }
-        if (ptr->left != NULL && ptr->left->visited == 0)
-        {
-            ptr = ptr->left;
-            continue;
-        }
-        printf("%d ", ptr->key);
-        ptr->visited = 1;
-        if (ptr->right != NULL && ptr->right->visited == 0)
-        {
-            ptr = ptr->right;
-            continue;
-        }
-    }
-}
 
-void reset_visited(Node *this) {
-    if (this != NULL) {
-        reset_visited(this->left);
-        this->visited = 0;
-        reset_visited(this->right);
-    }
-}
-
-void generate_random_set(int* array, int* size, int* start) {
-    for (int i=0, j=*start; i<*size; i++, j++) {
-        array[i] = j;
-    }
-    srand(time(NULL));
-    int temp;
-    int random;
-    for (int i = 0; i < *size; i++) {
-        random = rand() % (*start+*size);
-        temp = array[i];
-        array[i] = array[random];
-        array[random] = temp;        
-    }
-}
-
-void printTreeHelper(Node *node, char *prefix, int isLeft) {
-    if (node == NULL) {
-        return;
-    }
-    
-    printf("%s", prefix);
-    printf("%s", isLeft ? "├── " : "└── ");
-    printf("%d\n", node->key);
-    
-    char *newPrefix = (char *)malloc(strlen(prefix) + 5);
-    strcpy(newPrefix, prefix);
-    strcat(newPrefix, isLeft ? "│   " : "    ");
-    
-    if (node->left != NULL || node->right != NULL) {
-        if (node->right != NULL) {
-            printTreeHelper(node->right, newPrefix, node->left != NULL);
-        } else if (node->left != NULL) {
-            printf("%s├── (null)\n", newPrefix);
-        }
-        
-        if (node->left != NULL) {
-            printTreeHelper(node->left, newPrefix, 0);
-        } else if (node->right != NULL) {
-            printf("%s└── (null)\n", newPrefix);
-        }
-    }
-    
-    free(newPrefix);
-}
-
-void printTree(BST *tree) {
-    printf("Binary Search Tree\n===============\n");
-    if (tree == NULL || tree->root == NULL) {
-        printf("(empty tree)\n");
-        return;
-    }
-    
-    printf("%d\n", tree->root->key);
-    
-    if (tree->root->left != NULL || tree->root->right != NULL) {
-        if (tree->root->right != NULL) {
-            printTreeHelper(tree->root->right, "", tree->root->left != NULL);
-        } else {
-            printf("├── (null)\n");
-        }
-        
-        if (tree->root->left != NULL) {
-            printTreeHelper(tree->root->left, "", 0);
-        } else {
-            printf("└── (null)\n");
-        }
-    }
-}
 
 int main()
 {

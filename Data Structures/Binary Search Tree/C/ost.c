@@ -1,23 +1,19 @@
 #include "stdio.h"
 #include "stdlib.h"
+#include "ost.h"
 
-typedef struct Node
-{
-    struct Node *left;
-    struct Node *right;
-    struct Node *parent;
-    int key;
-    int rank;
-    char visited;
-} Node;
-
-#define nullptr ((void *)0);
-
-typedef struct
-{
-    Node *root;
-} BST;
-
+/**
+ * @brief Initialize a new node with given parameters
+ * 
+ * Sets all fields of a Node structure to the specified values.
+ * Initializes rank to 0 and visited flag to 0.
+ * 
+ * @param this The node to initialize
+ * @param left Pointer to left child node
+ * @param right Pointer to right child node
+ * @param parent Pointer to parent node
+ * @param key Pointer to integer key value
+ */
 void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
 {
     this->left = left;
@@ -28,10 +24,14 @@ void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
     this->visited = 0;
 }
 
-void new_BST(BST *this, int *array, int *size)
-{
-    ;
-}
+/**
+ * @brief Copy data from one node to another
+ * 
+ * Copies all data fields (except visited flag) from source node to destination node.
+ * 
+ * @param this Destination node to copy data to
+ * @param other Source node to copy data from
+ */
 void copy_Node(Node *this, Node *other)
 {
     this->left = other->left;
@@ -41,39 +41,15 @@ void copy_Node(Node *this, Node *other)
     this->rank = other->rank;
 }
 
-Node *get_Node(BST *this, int key)
-{
-    Node *ptr = this->root;
-
-    while (1)
-    {
-        if (ptr == NULL)
-            return NULL;
-        if (ptr->key == key)
-            return ptr;
-        if (ptr->key > key)
-        {
-            ptr = ptr->left;
-            continue;
-        }
-        ptr = ptr->right;
-    }
-}
-
-Node *min_Node(BST *this)
-{
-    Node *ptr = this->root;
-
-    if (ptr == NULL)
-        return NULL;
-    while (ptr->left != NULL)
-    {
-        ptr = ptr->left;
-    }
-
-    return ptr;
-}
-
+/**
+ * @brief Insert a new node into the binary search tree with rank maintenance
+ * 
+ * Inserts a new node while maintaining rank information for order statistics.
+ * The rank represents subtree size. Updates ranks of all ancestor nodes during insertion.
+ * 
+ * @param this The binary search tree to insert into
+ * @param new The node to be inserted into the tree
+ */
 void tree_insert(BST *this, Node *new)
 {
     Node *ptr = this->root;
@@ -117,26 +93,15 @@ void tree_insert(BST *this, Node *new)
     }
 }
 
-void transplant(BST *this, Node *u, Node *v)
-{
-    if (u->parent == NULL)
-    {
-        this->root = v;
-    }
-    else if (u == u->parent->left)
-    {
-        u->parent->left = v;
-    }
-    else
-    {
-        u->parent->right = v;
-    }
-    if (v != NULL)
-    {
-        v->parent = u->parent;
-    }
-}
-
+/**
+ * @brief Delete a node from the binary search tree with rank maintenance
+ * 
+ * Removes a node while maintaining rank information. Decrements ranks of all
+ * ancestor nodes and frees the deleted node's memory.
+ * 
+ * @param this The binary search tree to delete from
+ * @param z The node to be deleted from the tree
+ */
 void tree_delete(BST *this, Node *z)
 {
     Node *ptr = z->parent;
@@ -168,7 +133,16 @@ void tree_delete(BST *this, Node *z)
     }
     free(z);
 }
-
+/**
+ * @brief Find the i-th smallest element in the subtree (Order Statistics Select)
+ * 
+ * Implements the OS-SELECT algorithm to find the node with the i-th smallest key
+ * in the subtree rooted at x. Uses rank information for efficient selection.
+ * 
+ * @param x The root node of the subtree to search
+ * @param i The rank position to find (1-based index)
+ * @return Node* The node with the i-th smallest key, or NULL if not found
+ */
 Node *os_select(Node *x, int i)
 {
     Node *this = x;
@@ -195,6 +169,16 @@ Node *os_select(Node *x, int i)
     }
 }
 
+/**
+ * @brief Determine the rank of a node in the tree (Order Statistics Rank)
+ * 
+ * Implements the OS-RANK algorithm to find the position of node x in the
+ * sorted order of all keys in the tree. Returns -1 if node is NULL.
+ * 
+ * @param this The binary search tree containing the node
+ * @param x The node to find the rank for
+ * @return int The rank of the node (1-based position), or -1 if node is NULL
+ */
 int os_rank(BST *this, Node *x)
 {
     int r;
@@ -221,146 +205,6 @@ int os_rank(BST *this, Node *x)
     return r;
 }
 
-void inorder_tree_walk(Node *this)
-{
-    Node *ptr = this;
-    while (1)
-    {
-        if (ptr == NULL)
-        {
-            printf("\n");
-            return;
-        }
-        if (ptr->visited == 1)
-        {
-            ptr = ptr->parent;
-            continue;
-        }
-        if (ptr->left != NULL && ptr->left->visited == 0)
-        {
-            ptr = ptr->left;
-            continue;
-        }
-        printf("%d ", ptr->key);
-        ptr->visited = 1;
-        if (ptr->right != NULL && ptr->right->visited == 0)
-        {
-            ptr = ptr->right;
-            continue;
-        }
-    }
-}
-
-void reset_visited(Node *this)
-{
-    if (this != NULL)
-    {
-        reset_visited(this->left);
-        this->visited = 0;
-        reset_visited(this->right);
-    }
-}
-
-void generate_random_set(int *array, int *size, int *start)
-{
-    for (int i = 0, j = *start; i < *size; i++, j++)
-    {
-        array[i] = j;
-    }
-    srand(time(NULL));
-    int temp;
-    int random;
-    for (int i = 0; i < *size; i++)
-    {
-        random = rand() % (*start + *size);
-        temp = array[i];
-        array[i] = array[random];
-        array[random] = temp;
-    }
-}
-
-void printTreeHelper(Node *node, char *prefix, int isLeft)
-{
-    if (node == NULL)
-    {
-        return;
-    }
-
-    printf("%s", prefix);
-    printf("%s", isLeft ? "├── " : "└── ");
-    printf("%d,%d\n", node->key, node->rank);
-
-    char *newPrefix = (char *)malloc(strlen(prefix) + 5);
-    strcpy(newPrefix, prefix);
-    strcat(newPrefix, isLeft ? "│   " : "    ");
-
-    if (node->left != NULL || node->right != NULL)
-    {
-        if (node->right != NULL)
-        {
-            printTreeHelper(node->right, newPrefix, node->left != NULL);
-        }
-        else if (node->left != NULL)
-        {
-            printf("%s├── (null)\n", newPrefix);
-        }
-
-        if (node->left != NULL)
-        {
-            printTreeHelper(node->left, newPrefix, 0);
-        }
-        else if (node->right != NULL)
-        {
-            printf("%s└── (null)\n", newPrefix);
-        }
-    }
-
-    free(newPrefix);
-}
-
-void printTree(BST *tree)
-{
-    printf("Binary Search Tree\n===============\n");
-    if (tree == NULL || tree->root == NULL)
-    {
-        printf("(empty tree)\n");
-        return;
-    }
-
-    printf("%d,%d\n", tree->root->key, tree->root->rank);
-
-    if (tree->root->left != NULL || tree->root->right != NULL)
-    {
-        if (tree->root->right != NULL)
-        {
-            printTreeHelper(tree->root->right, "", tree->root->left != NULL);
-        }
-        else
-        {
-            printf("├── (null)\n");
-        }
-
-        if (tree->root->left != NULL)
-        {
-            printTreeHelper(tree->root->left, "", 0);
-        }
-        else
-        {
-            printf("└── (null)\n");
-        }
-    }
-}
-
-Node *max_Node(BST *this)
-{
-    Node *ptr = this->root;
-    while (ptr->right != NULL)
-    {
-        ptr = ptr->right;
-    }
-
-    return ptr;
-}
 #define BRANCH 0
 int main()
 {
