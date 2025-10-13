@@ -54,7 +54,11 @@ void tree_insert(BST *this, Node *new)
     Node *ptr = this->root;
     if (ptr == NULL)
     {
+        #ifdef ARENA
         this->root = (Node *)arena_alloc(arena,sizeof(Node));
+        #else
+        this->root = (Node *)malloc(sizeof(Node));
+        #endif
         copy_Node(this->root, new);
         return;
     }
@@ -110,7 +114,11 @@ void tree_delete(BST *this, Node* z)
         y->left = z->left;
         y->left->parent = y;
     }
+    #ifdef ARENA
     arena_free(arena, z);
+    #else
+    free(z);
+    #endif
 }
 
 #ifdef MAIN

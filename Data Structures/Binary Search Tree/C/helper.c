@@ -351,5 +351,10 @@ void tree_free(Node *this)
     }
     tree_free(this->left);
     tree_free(this->right);
+
+    #ifdef ARENA
     arena_free(arena, this);
+    #else
+    free(this);
+    #endif
 }
