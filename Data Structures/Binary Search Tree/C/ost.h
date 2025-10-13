@@ -2,16 +2,6 @@
 #define _OST_H
 #include "helper.h"
 
-typedef struct Node
-{
-    struct Node *left;
-    struct Node *right;
-    struct Node *parent;
-    int key;
-    int rank;
-    char visited;
-} Node;
-
 void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key);
 void copy_Node(Node *this, Node *other);
 void tree_insert(BST *this, Node *new);
