@@ -1,5 +1,6 @@
 #ifndef _HELPER_H
 #define _HELPER_H
+#include "arena.h"
 
 typedef struct Node
 {
@@ -20,9 +21,12 @@ Node *min_Node(Node *this);
 void transplant(BST *this, Node *u, Node *v);
 void reset_visited(Node *this);
 void generate_random_set(int *array, int *size, int *start);
+void generate_random_set_r(int *array, int *size, int *start, unsigned int *seed);
 void printTreeHelper(Node *node, char *prefix, int isLeft);
 void printTree(BST *tree);
 void inorder_tree_walk(Node *this);
 Node *max_Node(BST *this);
+int tree_height(Node *this);
+void tree_free(Node *this);
 
 #endif
