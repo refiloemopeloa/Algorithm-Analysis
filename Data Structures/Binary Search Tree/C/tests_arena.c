@@ -10,14 +10,14 @@
 
 void bst_tests()
 {
-#define test_limit 12
+#define test_limit 8
 #define test_base 10
 #define repeat 10
     int *array;
     int size;
     int start;
     unsigned long long bytes = 1024 * 1024 * 1024;
-    unsigned long long Gbytes = 10;
+    unsigned long long Gbytes = 8;
     allocation = Gbytes * bytes;
     arena = arena_create(allocation);
     if (!arena)
@@ -94,11 +94,13 @@ void bst_tests()
 
             printf("Freeing memory...\n");
 
-            // time this
+            // tree free
             t = clock();
-            //I AM HERE
-            tree_free(tree->root);
+            while (tree->root != NULL) {
+                tree_delete(tree, tree->root);
+            }
             t = clock() - t;
+
             data_delete_time[i - 1][j] = ((double)t) / CLOCKS_PER_SEC;
             arena_free(arena, array);
 
