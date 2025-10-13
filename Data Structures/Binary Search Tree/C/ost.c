@@ -205,6 +205,7 @@ int os_rank(BST *this, Node *x)
     return r;
 }
 
+#ifdef MAIN
 #define BRANCH 0
 int main()
 {
@@ -263,3 +264,4 @@ int main()
 
     return 0;
 }
+#endif
