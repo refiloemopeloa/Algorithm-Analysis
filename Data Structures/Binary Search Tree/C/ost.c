@@ -19,7 +19,7 @@ void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
     this->left = left;
     this->right = right;
     this->parent = parent;
-    this->key = key;
+    this->key = *key;
     this->rank = 0;
     this->visited = 0;
 }
