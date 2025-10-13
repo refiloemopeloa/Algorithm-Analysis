@@ -1,67 +1,34 @@
+#ifndef _ARENA_H
+#define _ARENA_H
 /**
- * @file arena.h
- * @brief A simple arena-based memory allocator implementation
+ * @file arena_allocator.h
+ * @brief A simple arena (bump) allocator implementation for efficient memory management
  */
-
-#ifndef ARENA_ALLOCATOR_H
-#define ARENA_ALLOCATOR_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
 
 /**
- * @brief Header for tracking individual allocations within the arena
+ * @struct Arena
+ * @brief Represents a memory arena for efficient allocations
  */
-typedef struct AllocHeader {
-    size_t size;            /**< Size of the allocated block (including alignment) */
-    bool is_free;           /**< Flag indicating if this allocation is free */
-    struct AllocHeader *next; /**< Pointer to the next allocation header in the list */
-} AllocHeader;
-
-/**
- * @brief Memory arena structure that manages a contiguous block of memory
- */
-typedef struct {
-    void *memory;           /**< Pointer to the start of the arena's memory block */
-    size_t total_size;      /**< Total size of the arena in bytes */
-    size_t used;            /**< Number of bytes currently used in the arena */
-    AllocHeader *first_alloc; /**< Pointer to the first allocation header in the linked list */
+typedef struct Arena {
+    uint8_t *memory;      /**< Pointer to the allocated memory block */
+    size_t total_size;    /**< Total size of the memory block in bytes */
+    size_t offset;        /**< Current offset for the next allocation */
 } Arena;
 
-/**
- * @brief Creates and initializes a new memory arena
- */
-Arena* arena_create(unsigned long long size);
-
-/**
- * @brief Allocates memory from the arena
- */
-void* arena_alloc(Arena *arena, unsigned long long size);
-
-/**
- * @brief Marks a specific allocation as free
- */
+Arena* arena_create(size_t size);
+void* arena_alloc(Arena *arena, size_t size);
 void arena_free(Arena *arena, void *ptr);
-
-/**
- * @brief Resets the arena, making all memory available for new allocations
- */
 void arena_reset(Arena *arena);
-
-/**
- * @brief Destroys the arena and frees all associated memory
- */
 void arena_destroy(Arena *arena);
-
-/**
- * @brief Prints statistics about the arena's usage
- */
-void arena_stats(Arena *arena);
 
 extern unsigned long long allocation;
 extern Arena *arena;
 
-#endif /* ARENA_ALLOCATOR_H */
+#endif
