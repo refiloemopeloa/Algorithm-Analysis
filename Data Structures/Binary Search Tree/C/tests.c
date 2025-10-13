@@ -10,23 +10,12 @@
 
 void bst_tests()
 {
-#define test_limit 12
+#define test_limit 8
 #define test_base 10
 #define repeat 10
     int *array;
     int size;
     int start;
-    unsigned long long bytes = 1024 * 1024 * 1024;
-    unsigned long long Gbytes = 10;
-    allocation = Gbytes * bytes;
-    arena = arena_create(allocation);
-    if (!arena)
-    {
-        fprintf(stderr, "Failed to create arena\n");
-        return;
-    }
-
-    printf("Created arena with %lld GB\n", Gbytes);
 
     double data_insert_time[test_limit][repeat] = {0};
     double data_inorder_time[test_limit][repeat] = {0};
@@ -36,10 +25,10 @@ void bst_tests()
 
     FILE *insert, *inorder, *delete, *height;
 
-    insert = fopen("data/bst_insert_arena.csv", "w");
-    inorder = fopen("data/bst_inorder_arena.csv", "w");
-    delete = fopen("data/bst_delete_arena.csv", "w");
-    height = fopen("data/bst_height_arena.csv", "w");
+    insert = fopen("data/bst_insert.csv", "w");
+    inorder = fopen("data/bst_inorder.csv", "w");
+    delete = fopen("data/bst_delete.csv", "w");
+    height = fopen("data/bst_height.csv", "w");
 
     for (int i = 1; i <= test_limit; i++)
     {
@@ -62,9 +51,9 @@ void bst_tests()
             srand(time(NULL));
             start = -(rand() % size);
             printf("Generating list of random numbers of length %d...\n", size);
-            array = (int *)arena_alloc(arena, size * sizeof(int));
+            array = (int *)calloc(size, sizeof(int));
             generate_random_set(array, &size, &start);
-            BST *tree = (BST *)arena_alloc(arena, sizeof(BST));
+            BST *tree = (BST *)malloc( sizeof(BST));
             tree->root = NULL;
             Node *node;
 
@@ -73,7 +62,7 @@ void bst_tests()
             t = clock();
             for (int k = 0; k < size; k++)
             {
-                node = (Node *)arena_alloc(arena, sizeof(Node));
+                node = (Node *)malloc(sizeof(Node));
                 new_Node(node, NULL, NULL, NULL, &array[k]);
                 tree_insert(tree, node);
             }
@@ -94,15 +83,15 @@ void bst_tests()
 
             printf("Freeing memory...\n");
 
-            // time this
+            // tree free
             t = clock();
-            //I AM HERE
-            tree_free(tree->root);
+            while (tree->root != NULL) {
+                tree_delete(tree, tree->root);
+            }
             t = clock() - t;
-            data_delete_time[i - 1][j] = ((double)t) / CLOCKS_PER_SEC;
-            arena_free(arena, array);
 
-            arena_reset(arena);
+            data_delete_time[i - 1][j] = ((double)t) / CLOCKS_PER_SEC;
+            free(array);
 
             printf("Printing to files...\n");
             fprintf(insert, "%.15f,", data_insert_time[i - 1][j]);
@@ -114,10 +103,10 @@ void bst_tests()
             fclose(delete);
             fclose(height);
             
-            insert = fopen("data/bst_insert_arena.csv", "a");
-            inorder = fopen("data/bst_inorder_arena.csv", "a");
-            delete = fopen("data/bst_delete_arena.csv", "a");
-            height = fopen("data/bst_height_arena.csv", "a");
+            insert = fopen("data/bst_insert.csv", "a");
+            inorder = fopen("data/bst_inorder.csv", "a");
+            delete = fopen("data/bst_delete.csv", "a");
+            height = fopen("data/bst_height.csv", "a");
         }
         fprintf(insert, "\n");
         fprintf(inorder, "\n");
@@ -129,13 +118,12 @@ void bst_tests()
         fclose(delete);
         fclose(height);
 
-        insert = fopen("data/bst_insert_arena.csv", "a");
-        inorder = fopen("data/bst_inorder_arena.csv", "a");
-        delete = fopen("data/bst_delete_arena.csv", "a");
-        height = fopen("data/bst_height_arena.csv", "a");
+        insert = fopen("data/bst_insert.csv", "a");
+        inorder = fopen("data/bst_inorder.csv", "a");
+        delete = fopen("data/bst_delete.csv", "a");
+        height = fopen("data/bst_height.csv", "a");
     }
 
-    arena_destroy(arena);
     return;
 }
 
