@@ -2,6 +2,7 @@
 #define _HELPER_H
 #include "arena.h"
 
+#ifdef BST_TEST
 typedef struct Node
 {
     struct Node *left;
@@ -10,7 +11,17 @@ typedef struct Node
     int key;
     char visited;
 } Node;
-
+#else
+typedef struct Node
+{
+    struct Node *left;
+    struct Node *right;
+    struct Node *parent;
+    int key;
+    int rank;
+    char visited;
+} Node;
+#endif
 typedef struct BST
 {
     Node *root;
