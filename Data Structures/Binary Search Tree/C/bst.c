@@ -1,4 +1,3 @@
-#include "stdio.h"
 #include "stdlib.h"
 #include "bst.h"
 
@@ -20,7 +19,7 @@ void new_Node(Node *this, Node *left, Node *right, Node *parent, int *key)
     this->left = left;
     this->right = right;
     this->parent = parent;
-    this->key = key;
+    this->key = *key;
     this->visited = 0;
 }
 
@@ -55,7 +54,7 @@ void tree_insert(BST *this, Node *new)
     Node *ptr = this->root;
     if (ptr == NULL)
     {
-        this->root = (Node *)malloc(sizeof(Node));
+        this->root = (Node *)arena_alloc(arena,sizeof(Node));
         copy_Node(this->root, new);
         return;
     }
@@ -111,24 +110,35 @@ void tree_delete(BST *this, Node* z)
         y->left = z->left;
         y->left->parent = y;
     }
+    arena_free(arena, z);
 }
 
-
-
+#ifdef MAIN
 int main()
 {
+    allocation = 1024 * 1024 * 1024;
+    arena = arena_create(allocation);
+        if (!arena)
+    {
+        fprintf(stderr, "Failed to create arena\n");
+        return 1;
+    }
+
+    printf("Created arena with %d GB\n\n", allocation);
+
+
     int size = 12;
     int start = 0;
-    int *array = (int*)calloc(size, sizeof(int));
+    int *array = (int*)arena_alloc(arena,size * sizeof(int));
     generate_random_set(array, &size, &start);
-    BST *tree = (BST *)malloc(sizeof(BST));
+    BST *tree = (BST *)arena_alloc(arena,sizeof(BST));
 
     tree->root = NULL;
     Node *node;
 
     for (int i = 0; i < size; i++)
     {
-        node = (Node *)malloc(sizeof(Node));
+        node = (Node *)arena_alloc(arena, sizeof(Node));
         new_Node(node, NULL, NULL, NULL, array[i]);
         tree_insert(tree, node);
     }
@@ -142,5 +152,19 @@ int main()
     printf("Tree after deleting %d\n", key);
     printTree(tree);
     reset_visited(tree->root);
+
+    arena_stats(arena);
+    printf("\n");
+
+    
+    arena_reset(arena);
+    printf("Reset arena\n\n");
+    arena_stats(arena);
+    
+    // Clean up
+    arena_destroy(arena);
+    printf("\nArena destroyed\n");
+
     return 0;
 }
+#endif
