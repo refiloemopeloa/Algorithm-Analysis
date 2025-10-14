@@ -41,19 +41,34 @@ void bst_tests()
 
     FILE *insert, *inorder, *delete, *height;
 
+#ifdef WRITE
     insert = fopen("data/bst_insert_arena.csv", "w");
     inorder = fopen("data/bst_inorder_arena.csv", "w");
     delete = fopen("data/bst_delete_arena.csv", "w");
     height = fopen("data/bst_height_arena.csv", "w");
+#else
+    insert = fopen("data/bst_insert_arena.csv", "a");
+    inorder = fopen("data/bst_inorder_arena.csv", "a");
+    delete = fopen("data/bst_delete_arena.csv", "a");
+    height = fopen("data/bst_height_arena.csv", "a");
+#endif
 
+#ifdef ONE_TEST
+    for (int i = test_limit; i <= test_limit; i++)
+#else
     for (int i = 1; i <= test_limit; i++)
+#endif
     {
         if (insert == NULL || inorder == NULL || delete == NULL || height == NULL)
         {
             fprintf(stderr, "\nError opened file\n");
             exit(1);
         }
+#ifdef ONE_TEST
+        size = pow(test_base, i) / 3 * 2;
+#else
         size = pow(test_base, i);
+#endif
         printf("========== RUNNING TEST FOR SIZE %d ==========\n", size);
         fprintf(insert, "%d,", size);
         fprintf(inorder, "%d,", size);
@@ -178,19 +193,34 @@ void ost_tests()
 
     FILE *insert, *select, *delete, *rank;
 
+#ifdef WRITE
     insert = fopen("data/ost_insert_arena.csv", "w");
     select = fopen("data/ost_select_arena.csv", "w");
     delete = fopen("data/ost_delete_arena.csv", "w");
     rank = fopen("data/ost_rank_arena.csv", "w");
+#else
+    insert = fopen("data/ost_insert_arena.csv", "a");
+    select = fopen("data/ost_select_arena.csv", "a");
+    delete = fopen("data/ost_delete_arena.csv", "a");
+    rank = fopen("data/ost_rank_arena.csv", "a");
+#endif
 
+#ifdef ONE_TEST
+    for (int i = test_limit; i <= test_limit; i++)
+#else
     for (int i = 1; i <= test_limit; i++)
+#endif
     {
         if (insert == NULL || select == NULL || delete == NULL || rank == NULL)
         {
             fprintf(stderr, "\nError opened file\n");
             exit(1);
         }
+#ifdef ONE_TEST
+        size = pow(test_base, i) / 3 * 2;
+#else
         size = pow(test_base, i);
+#endif
         printf("========== RUNNING TEST FOR SIZE %d ==========\n", size);
         fprintf(insert, "%d,", size);
         fprintf(select, "%d,", size);
@@ -272,10 +302,10 @@ void ost_tests()
             fclose(delete);
             fclose(rank);
 
-            insert = fopen("data/ost_insert_arena_arena.csv", "a");
-            select = fopen("data/ost_select_arena_arena.csv", "a");
-            delete = fopen("data/ost_delete_arena_arena.csv", "a");
-            rank = fopen("data/ost_rank_arena_arena.csv", "a");
+            insert = fopen("data/ost_insert_arena.csv", "a");
+            select = fopen("data/ost_select_arena.csv", "a");
+            delete = fopen("data/ost_delete_arena.csv", "a");
+            rank = fopen("data/ost_rank_arena.csv", "a");
         }
         fprintf(insert, "\n");
         fprintf(select, "\n");
