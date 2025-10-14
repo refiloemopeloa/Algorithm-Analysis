@@ -30,19 +30,34 @@ void bst_tests()
 
     FILE *insert, *inorder, *delete, *height;
 
+#ifdef WRITE
     insert = fopen("data/bst_insert.csv", "w");
     inorder = fopen("data/bst_inorder.csv", "w");
     delete = fopen("data/bst_delete.csv", "w");
     height = fopen("data/bst_height.csv", "w");
+#else
+    insert = fopen("data/bst_insert.csv", "a");
+    inorder = fopen("data/bst_inorder.csv", "a");
+    delete = fopen("data/bst_delete.csv", "a");
+    height = fopen("data/bst_height.csv", "a");
+#endif
 
+#ifdef ONE_TEST
+    for (int i = test_limit; i <= test_limit; i++)
+#else
     for (int i = 1; i <= test_limit; i++)
+#endif
     {
         if (insert == NULL || inorder == NULL || delete == NULL || height == NULL)
         {
             fprintf(stderr, "\nError opened file\n");
             exit(1);
         }
+#ifdef ONE_TEST
+        size = pow(test_base, i) / 3 * 2;
+#else
         size = pow(test_base, i);
+#endif
         printf("========== RUNNING TEST FOR SIZE %d ==========\n", size);
         fprintf(insert, "%d,", size);
         fprintf(inorder, "%d,", size);
@@ -58,7 +73,7 @@ void bst_tests()
             printf("Generating list of random numbers of length %d...\n", size);
             array = (int *)calloc(size, sizeof(int));
             generate_random_set(array, &size, &start);
-            BST *tree = (BST *)malloc( sizeof(BST));
+            BST *tree = (BST *)malloc(sizeof(BST));
             tree->root = NULL;
             Node *node;
 
@@ -90,7 +105,8 @@ void bst_tests()
 
             // tree free
             t = clock();
-            while (tree->root != NULL) {
+            while (tree->root != NULL)
+            {
                 tree_delete(tree, tree->root);
             }
             t = clock() - t;
@@ -107,7 +123,7 @@ void bst_tests()
             fclose(inorder);
             fclose(delete);
             fclose(height);
-            
+
             insert = fopen("data/bst_insert.csv", "a");
             inorder = fopen("data/bst_inorder.csv", "a");
             delete = fopen("data/bst_delete.csv", "a");
@@ -146,24 +162,39 @@ void ost_tests()
     double data_rank_time[test_limit][repeat][repeat] = {0};
     double data_delete_time[test_limit][repeat] = {0};
     int random;
-    Node* random_node;
+    Node *random_node;
     clock_t t;
 
     FILE *insert, *select, *delete, *rank;
 
+#ifdef WRITE
     insert = fopen("data/ost_insert.csv", "w");
     select = fopen("data/ost_select.csv", "w");
     delete = fopen("data/ost_delete.csv", "w");
     rank = fopen("data/ost_rank.csv", "w");
+#else
+    insert = fopen("data/ost_insert.csv", "a");
+    select = fopen("data/ost_select.csv", "a");
+    delete = fopen("data/ost_delete.csv", "a");
+    rank = fopen("data/ost_rank.csv", "a");
+#endif
 
+#ifdef ONE_TEST
+    for (int i = test_limit; i <= test_limit; i++)
+#else
     for (int i = 1; i <= test_limit; i++)
+#endif
     {
         if (insert == NULL || select == NULL || delete == NULL || rank == NULL)
         {
             fprintf(stderr, "\nError opened file\n");
             exit(1);
         }
+#ifdef ONE_TEST
+        size = pow(test_base, i) / 3 * 2;
+#else
         size = pow(test_base, i);
+#endif
         printf("========== RUNNING TEST FOR SIZE %d ==========\n", size);
         fprintf(insert, "%d,", size);
         fprintf(select, "%d,", size);
@@ -179,7 +210,7 @@ void ost_tests()
             printf("Generating list of random numbers of length %d...\n", size);
             array = (int *)calloc(size, sizeof(int));
             generate_random_set(array, &size, &start);
-            BST *tree = (BST *)malloc( sizeof(BST));
+            BST *tree = (BST *)malloc(sizeof(BST));
             tree->root = NULL;
             Node *node;
 
@@ -199,7 +230,8 @@ void ost_tests()
 
             printf("OS Select...\n");
             // time this
-            for (int k = 0; k < repeat; k++) {
+            for (int k = 0; k < repeat; k++)
+            {
                 random = (rand() % (size)) + 1;
                 t = clock();
                 os_select(tree->root, random);
@@ -210,7 +242,8 @@ void ost_tests()
 
             printf("OS Rank...\n");
             // time this
-            for (int k = 0; k < repeat; k++) {
+            for (int k = 0; k < repeat; k++)
+            {
                 random = start + (rand() % (size));
                 random_node = get_Node(tree, random);
                 t = clock();
@@ -224,7 +257,8 @@ void ost_tests()
 
             // tree free
             t = clock();
-            while (tree->root != NULL) {
+            while (tree->root != NULL)
+            {
                 tree_delete(tree, tree->root);
             }
             t = clock() - t;
@@ -239,7 +273,7 @@ void ost_tests()
             fclose(select);
             fclose(delete);
             fclose(rank);
-            
+
             insert = fopen("data/ost_insert.csv", "a");
             select = fopen("data/ost_select.csv", "a");
             delete = fopen("data/ost_delete.csv", "a");
@@ -400,10 +434,10 @@ void bst_tests()
 
 int main()
 {
-    #ifdef BST_TEST
+#ifdef BST_TEST
     bst_tests();
-    #else
+#else
     ost_tests();
-    #endif
+#endif
     return 0;
 }
