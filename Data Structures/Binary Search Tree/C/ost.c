@@ -56,10 +56,10 @@ void tree_insert(BST *this, Node *new)
     new->rank = 1;
     if (ptr == NULL)
     {
-#ifdef BST_TEST
-        this->root = (Node *)malloc(sizeof(Node));
-#else
+#ifdef ARENA
         this->root = (Node *)arena_alloc(arena, sizeof(Node));
+#else
+        this->root = (Node *)malloc(sizeof(Node));
 #endif
         copy_Node(this->root, new);
         return;
@@ -135,10 +135,10 @@ void tree_delete(BST *this, Node *z)
         y->left = z->left;
         y->left->parent = y;
     }
-#ifdef BST_TEST
-    free(z);
-#else
+#ifdef ARENA
     arena_free(arena, z);
+#else
+    free(z);
 #endif
 }
 /**
